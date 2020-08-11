@@ -6,12 +6,13 @@
 #include "stream/interval.h"
 
 int main() {
-    // create
-    Stream *s_interval = make_interval(1);
+    // create streams
+    Stream *s_interval = stream_from_interval(1);
+    // subscribe
     Subscriber *s1 = stream_subscribe(s_interval, h_println_int);
     // wait
-    stream_join(s_interval);
-    // free
+    subscriber_join(s1);
+    // free memory
     stream_free(s_interval);
     subscriber_free(s1);
 }

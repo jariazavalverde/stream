@@ -16,7 +16,9 @@ void stream_free(Stream *stream);
 Subscriber *stream_subscribe(Stream *stream, void * (*handler)(void *));
 void stream_join(Stream *stream);
 Stream *stream_filter(Stream *stream, int (*predicate)(void *));
+Stream *stream_map(Stream *stream, void *(*fn)(void *));
 void *__stream_on_submit_id(Stream *stream, Subscriber *subscriber, void *arg, void *elem);
 void *__stream_on_submit_filter(Stream *stream, Subscriber *subscriber, void *arg, void *elem);
+void *__stream_on_submit_map(Stream *stream, Subscriber *subscriber, void *arg, void *elem);
 
 #endif

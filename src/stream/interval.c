@@ -45,7 +45,7 @@ void *__interval_thread(void *arg) {
     int seconds = data->seconds;
     int time = 0;
     free(arg);
-    while(1) {
+    while(subscriber->subscribed) {
         sleep(seconds);
         time += seconds;
         stream->on_submit(stream, subscriber, stream->submit_arg, &time);

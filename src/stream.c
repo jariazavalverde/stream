@@ -62,6 +62,26 @@ Stream *stream_map(Stream *stream, void *(*fn)(void *)) {
     return out;
 }
 
+Stream *stream_take(Stream *stream, int count) {
+    Stream *out = stream_alloc();
+    struct {
+        Stream *stream;
+        int *count;
+    } *submit_arg = malloc(sizeof(struct {
+        Stream *stream;
+        int *count;
+    }));
+    int *pcount = malloc(sizeof(int));
+    *pcount = count;
+    submit_arg->stream = stream;
+    submit_arg->count = pcount;
+    out->on_submit = __stream_on_submit_take;
+    out->on_subscribe = stream->on_subscribe;
+    out->submit_arg = submit_arg;
+    out->subscribe_arg = stream->subscribe_arg;
+    return out;
+}
+
 void *__stream_on_submit_id(Stream *stream, Subscriber *subscriber, void *arg, void *elem) {
     return subscriber->handler(elem);
 }
@@ -82,4 +102,16 @@ void *__stream_on_submit_map(Stream *stream, Subscriber *subscriber, void *arg, 
     void *result = outer->on_submit(outer, subscriber, outer->submit_arg, map);
     free(map);
     return result;
+}
+
+void *__stream_on_submit_take(Stream *stream, Subscriber *subscriber, void *arg, void *elem) {
+    struct { Stream *stream; int *count; } *data = arg;
+    Stream *outer = data->stream;
+    if(*(data->count) > 0) {
+        *(data->count) -= 1;
+        void *result = outer->on_submit(outer, subscriber, outer->submit_arg, elem);
+        if(*(data->count) == 0)
+            subscriber_unsubscribe(subscriber);
+        return result;
+    }
 }

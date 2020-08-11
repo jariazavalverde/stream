@@ -21,6 +21,6 @@ void *__array_int_on_subscribe(Stream *stream, Subscriber *subscriber, void *arg
     struct { int *array; int length; } *data = arg;
     int *array = data->array;
     int length = data->length;
-    for(i = 0; i < length; i++)
+    for(i = 0; i < length && subscriber->subscribed; i++)
         stream->on_submit(stream, subscriber, stream->submit_arg, &(array[i]));
 }

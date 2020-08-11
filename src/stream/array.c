@@ -18,15 +18,9 @@ Stream *stream_from_array_int(int *array, int length) {
 
 void *__array_int_on_subscribe(Stream *stream, Subscriber *subscriber, void *arg) {
     int i;
-    struct {
-        int *array;
-        int length;
-    } *data = arg;
+    struct { int *array; int length; } *data = arg;
     int *array = data->array;
     int length = data->length;
-    if(length < 0)
-        return NULL;
-    for(i = 0; i < length; i++) {
-        subscriber->handler(&(array[i]));
-    }
+    for(i = 0; i < length; i++)
+        stream->on_submit(stream, subscriber, stream->submit_arg, &(array[i]));
 }

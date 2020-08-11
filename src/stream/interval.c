@@ -48,6 +48,6 @@ void *__interval_thread(void *arg) {
     while(1) {
         sleep(seconds);
         time += seconds;
-        subscriber->handler(&time);
+        stream->on_submit(stream, subscriber, stream->submit_arg, &time);
     }
 }
